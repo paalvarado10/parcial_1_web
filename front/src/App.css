@@ -4,8 +4,23 @@
   width: 100%;
   height: auto;
 }
+h1, h2 {
+  color: white;
+}
 
-
+.contenedor-vega {
+  background-color: #F2F2F0;
+  margin: auto;
+  width: 45%;
+  border-radius: 25px;
+}
+label {
+  font-size: 2em;
+  color: white;
+}
+.FormGroup {
+  
+}
 .App-header {
  
   height: 150px;
