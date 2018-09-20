@@ -13,7 +13,9 @@ class App extends Component {
   componentDidMount(){
     fetch("/api?id=0")
     .then((res)=>{
+      if(res.json){
       return res.json();
+}
     })
     .then((prueba)=>{
       console.log(prueba);

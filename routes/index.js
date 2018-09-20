@@ -6,7 +6,7 @@ const MongoClient = require("mongodb").MongoClient;
 const url = process.env.MLAB;
 
 
-router.get('/', function(req, res) {
+router.get('/api', function(req, res) {
 	console.log("llega");
 	let id=parseInt(req.query.id);
 	const p = {id: id };
