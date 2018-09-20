@@ -50,7 +50,7 @@ class App extends Component {
         <header className="App-header">
           <h1 className="App-title">Parcial 1 Pablo Alvarado</h1>
         </header>
-        <h2>.....Cargando........</h2>
+        <h2 style={{color:"white"}}>.....Cargando........</h2>
       </div>
     );
   }
