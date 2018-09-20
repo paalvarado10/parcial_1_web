@@ -30,4 +30,5 @@ function getPrueba (query, callback){
 	client.close(); //se cierra collecion
 	});
 }
+
 module.exports = router;
