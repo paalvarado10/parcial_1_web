@@ -1,59 +1,59 @@
 import React, { Component } from 'react';
 import './App.css';
 import { Card, Button, CardTitle, CardText, Row, Col } from 'reactstrap';
+import vegaEmbed from 'vega-embed';
+import showError from 'vega-embed';
+
 
 class App extends Component {
   constructor (props) {
     super(props);
     this.state = {
-      estadoPrueba:''
-    }
+      estadoPrueba:'',
+      data:''
+    };
   }
-
   componentDidMount(){
-    fetch("/api?id=0")
-    .then((res)=>{
-      if(res.json){
-      return res.json();
+var myData = [
+  {"a": "A","b": 28}, {"a": "B","b": 55}, {"a": "C","b": 43},
+  {"a": "D","b": 91}, {"a": "E","b": 81}, {"a": "F","b": 53},
+  {"a": "G","b": 19}, {"a": "H","b": 87}, {"a": "I","b": 52}
+];
+var spec = {
+  "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+  "description": "A simple bar chart with embedded data.",
+  "data": {
+    "name": "myData" 
+  },
+  "mark": "bar",
+  "encoding": {
+    "y": {"field": "a", "type": "ordinal"},
+    "x": {"field": "b", "type": "quantitative"}
+  }
 }
-    })
-    .then((prueba)=>{
-      console.log(prueba);
-      this.setState({ estadoPrueba: prueba })
-    })
-    .catch((err) =>{console.log(err)});
+
+const embed_opt = {"mode": "vega-lite"};    
+const el = this.divTarget;
+console.log(el);
+console.log(embed_opt)
+const view = vegaEmbed(el, spec, embed_opt)
+      .catch(error => showError(el, error))
+      .then((res) =>  res.view.insert("myData", myData).run());
   }
   render() {
-    let x = this.state.estadoPrueba;
-    if(x){
+
     return (
       <div className="App">
-        <header className="App-header">
-          <h1 className="App-title">Parcial 1 Pablo Alvarado</h1>
-        </header>
-          
-           <Row>
-            <Col sm="12" md={{ size: 8, offset: 2 }}>
-              <Card body outline color="danger">
-                <CardTitle>{x.name}</CardTitle>
-                <CardText>{x.texto}</CardText>
-                <Button>Go somewhere</Button>
-              </Card>
-            </Col>
-          </Row>
+        <div ref={(div) => this.divTarget=div}></div>
+        <div class="form-group">
+          <label for="comment">Inserte la informacion:</label>
+          <textarea class="form-control" rows="20" className="Json"></textarea>
+          <button>Aceptar</button>         
+        </div>
           <br/>
       </div>
     );  
     }
-    return (
-      <div className="App">
-        <header className="App-header">
-          <h1 className="App-title">Parcial 1 Pablo Alvarado</h1>
-        </header>
-        <h2 style={{color:"white"}}>.....Cargando........</h2>
-      </div>
-    );
-  }
 }
 
 export default App;

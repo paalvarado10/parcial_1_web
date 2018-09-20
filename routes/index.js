@@ -2,10 +2,10 @@
 require("dotenv").config();
 var express = require('express');
 var router = new express.Router();
-const MongoClient = require("mongodb").MongoClient;
-const url = process.env.MLAB;
+//const MongoClient = require("mongodb").MongoClient;
+//const url = process.env.MLAB;
 
-
+/*
 router.get('/api', function(req, res) {
 	console.log("llega");
 	let id=parseInt(req.query.id);
