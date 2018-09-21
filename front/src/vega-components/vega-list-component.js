@@ -1,1 +1,0 @@
-vega-list-component.js

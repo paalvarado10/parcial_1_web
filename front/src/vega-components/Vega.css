@@ -1,0 +1,15 @@
+
+h1, h2 {
+  color: white;
+}
+
+.contenedor-vega {
+  background-color: #F2F2F0;
+  margin: auto;
+  width: 90%;
+  border-radius: 25px;
+}
+label {
+  font-size: 2em;
+  color: white;
+}

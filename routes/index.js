@@ -4,31 +4,43 @@ var express = require('express');
 var router = new express.Router();
 const MongoClient = require("mongodb").MongoClient;
 //const url = process.env.MLAB;
+const url="mongodb://parcial_1:bdparcial1@ds163402.mlab.com:63402/parcial_1";
+var db;
 
+MongoClient.connect(url, (err, client) => {
+  if (err) return console.log(err)
+  db = client.db('parcial_1') 
+})
 
-router.get('/api', function(req, res) {
-	console.log("llega");
-	let id=parseInt(req.query.id);
-	const p = {id: id };
-	console.log(p);
-	getPrueba(p, (prueba)=> res.send(prueba));
+router.post('/api/view/create', (req, res) => {
+  db.collection('views').save(req.body, (err, result) => {
+
+    if (err) res.send({
+      succes: false,
+      message: "Error: saving the view in the db"
+    }) 
+    res.send({
+      succes: true,
+      result: result
+    });
+  })
 });
-function findPrueba (query, db, callback) {
-  const collection = db.collection("demo");
-  collection.findOne(query, (err, docs) => {
-    if(err){console.log("no se encontro")} //se revisan que no se den errores.
-    console.log("Found " + JSON.stringify(docs) + " urls");
-    if (docs === null || docs === undefined) docs = { error: "no se encontro el item de prueba" }; //sino se encuentra el usuario, se responde con un error
-    callback(docs); //se responde con el usuario
-  });
-}
-function getPrueba (query, callback){
-	MongoClient.connect(url, (err, client) => { // conexion a la base de datos
-	if(err){console.log("Problemas con la conexion")}
-	const db = client.db("parcial_1"); //se pide la collecion
-	findPrueba(query, db, callback); //se busca el item en la base de datos	
-	client.close(); //se cierra collecion
-	});
-}
+
+router.get('/api/views', (req, res)=>{
+  db.collection('views').find().limit(20).toArray(function(err, results){
+    if(!err){
+    res.send({
+      succes: true,
+      result: results
+    });
+    }
+    else{
+      res.send({
+        succes: false,
+        message: "Error getting from db"
+      });
+    }
+  })
+});
 
 module.exports = router;
