@@ -56,8 +56,6 @@ class Ratting extends Component {
       this.setState({
         rate: '',
         user: ''
-        }, ()=>{
-          this.props.volver(true);
         });
       }
       else{
