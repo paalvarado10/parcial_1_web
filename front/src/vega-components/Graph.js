@@ -34,9 +34,7 @@ class Graph extends Component {
     .then(res => res.json())
     .then(json=>{
       if(json.succes){
-       console.log(id);
         let rs = json.result
-        console.log(rs);
         this.setState({
           list: rs
         });
@@ -50,9 +48,7 @@ class Graph extends Component {
     .then(res => res.json())
     .then(json=>{
       if(json.succes){
-       console.log(id);
         let rs = json.result
-        console.log(rs);
         this.setState({
           list: rs
         });
@@ -62,7 +58,6 @@ class Graph extends Component {
   };
   plot(){
     const plot = this.state.view;
-    console.log(plot.data+" ESTE ES EL TO STRING");
     let spec = plot.spec;
     const embed_opt = {"mode": "vega-lite"};    
     const el = this.divTarget;
@@ -77,10 +72,8 @@ class Graph extends Component {
   render() {
     let list = this.state.list;
     let id = this.state.id;
-    console.log("el id del view "+id)
     if(list){
       let prom=0;
-      console.log(list.length);
       let lista = list.map((n,i)=>{
         prom+=parseInt(n.rate);
         return(
@@ -91,7 +84,6 @@ class Graph extends Component {
           </div>
           )
       });
-      console.log(prom);
       prom = (prom/(list.length)).toFixed(1);
 
       //-----------------------------------------------------

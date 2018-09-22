@@ -47,7 +47,7 @@ class VegaCsv extends Component {
         user,
         spec
       }=this.state;
-      if(!data && !user && !comment){
+      if(!data || !user || !comment){
         alert("Mising Values, data, user and comment are require for saving");
       }
       else{
@@ -147,6 +147,7 @@ class VegaCsv extends Component {
       console.log('Spec de salida'+JSON.stringify(specPrueba));
     }
     const data = result.data;
+    console.log(data);
     try { 
       const embed_opt = {"mode": "vega-lite"};    
       const el = this.divrender;

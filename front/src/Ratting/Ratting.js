@@ -37,7 +37,6 @@ class Ratting extends Component {
       user,
       id
     } =this.state;
-    console.log("id del view/rate : "+id);
     if(rate && user && id){
       //-------------------------------------------------------------
       fetch('/api/rating/create',
