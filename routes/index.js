@@ -4,7 +4,8 @@ var express = require('express');
 var router = new express.Router();
 const MongoClient = require("mongodb").MongoClient;
 
-const url = process.env.MLAB;
+//const url = process.env.MLAB;
+const url="mongodb://parcial_1:bdparcial1@ds163402.mlab.com:63402/parcial_1";   
 var db;
 
 MongoClient.connect(url, (err, client) => {
@@ -12,6 +13,60 @@ MongoClient.connect(url, (err, client) => {
   db = client.db('parcial_1') 
 })
 
+router.get('/api/reting/rate', (req, res)=>{
+  const { query }=req;
+  const { id } =query;
+  db.collection('rates').find({ id: id}).limit(10).toArray(function(err, results){
+    if(err){
+      res.send({
+        succes: false,
+        message: "Error getting from db"
+      });
+    }
+    else {
+      res.send({
+        succes: true,
+        result: results
+      });
+    }
+  })
+});
+router.post('/api/rating/create', (req, res) => {
+  let body =req.body;
+  db.collection('rates').find({"user": body.user ,"id": body.id}).toArray(function(err, results){
+    if(err){
+      console.log(err);
+      res.send({
+      succes: false,
+      message: "Error: in the db"
+    }) 
+    }
+    if(results.length>0){
+      res.send({
+      succes: false,
+      message: "Error: the user al ready rate the view"
+    }) 
+    }
+    else {
+      db.collection('rates').save(req.body, (err, result) => {
+    if (err){ 
+      console.log(err);
+      res.send({
+      succes: false,
+      message: "Error: saving the review in the db"
+    }) 
+      }
+      else{
+
+    res.send({
+      succes: true,
+      result: "exit saving the review"
+    });
+    }
+    })
+  }
+})
+});
 router.post('/api/view/create', (req, res) => {
   db.collection('views').save(req.body, (err, result) => {
 
