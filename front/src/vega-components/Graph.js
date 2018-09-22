@@ -100,6 +100,8 @@ class Graph extends Component {
             <div className="contenedor-vega">
               <div ref={(div) => this.divTarget=div}></div>
             </div>
+            <br/>
+            <Ratting id={this.state.view._id} />
          </Col>
          <Col>
             <div key="listaCalificaciones" className="contenedor-vega">
@@ -113,7 +115,7 @@ class Graph extends Component {
          </Col>
          </Row>  
         <br/>
-        <Ratting id={this.state.view._id} />
+        
         <Button color="danger" onClick={this.volver}>Back</Button>
       </div>
     );

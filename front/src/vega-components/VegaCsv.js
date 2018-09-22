@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Button, FormGroup, Label, Input, Row, Col } from 'reactstrap';
 import vegaEmbed from 'vega-embed';
 import showError from 'vega-embed';
+import './Vega.css';
 
 
 class VegaCsv extends Component {
@@ -194,6 +195,8 @@ class VegaCsv extends Component {
         </div>
         <br/>
         <h3 style={{color: "white"}}>{error}</h3>
+
+        <div className="contenedor-vega">
         <FormGroup style={{width: "80%", margin: "auto"}}>
             <Label for="exampleText">Insert JSON</Label>
           <Input type="textarea" name="text" id="exampleText" value={text} onChange={this.onChangeTextJson}/>
@@ -202,6 +205,9 @@ class VegaCsv extends Component {
         <Label for="exampleFile">A partir de un csv</Label>
           <Input type="file" name="file" id="exampleFile" value={data} onChange={this.handleChange}/>
         </FormGroup>
+        </div>
+
+
         <br/>
          <FormGroup style={{width: "80%", margin: "auto"}}>
          <Label for="userText">Fill your name please</Label>
@@ -223,19 +229,26 @@ class VegaCsv extends Component {
           <div ref={(div) => this.divrender=div}></div>
         </div>
         <br/>
+
+        <div className="contenedor-vega">
         <FormGroup style={{width: "80%", margin: "auto"}}>
-            <Label for="exampleText">Insert JSON</Label>
+            <Label for="exampleText" style={{color: "black"}}>Insert JSON</Label>
           <Input type="textarea" name="text" id="exampleText" value={text} onChange={this.onChangeTextJson}/>
           </FormGroup>
         <FormGroup style={{width: "50", margin: "auto"}}>
         <Row>
         <Col></Col>
-        <Col className="contenedor-vega">
+        <Col>
         <h5>Select your csv file</h5>
-        <Input type="file" name="file" id="exampleFile" onChange={this.handleChange}/></Col>
+        <Input type="file" name="file" id="exampleFile" onChange={this.handleChange}/>
+        </Col>
         <Col></Col>
         </Row>
         </FormGroup>
+        <br/>
+        </div>
+
+
          <br/>
          <FormGroup style={{width: "80%", margin: "auto"}}>
          <Label for="userText">Fill your name please</Label>

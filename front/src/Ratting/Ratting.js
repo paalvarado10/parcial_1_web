@@ -95,7 +95,7 @@ class Ratting extends Component {
       </Col>
       <Col>
         <Label for="rating" style={{color: "black"}}>
-        Please select a rating</Label>
+       Rate view</Label>
         <Input type="select" name="select" id="rating" value={rate} onChange={this.handleChange}>
           <option>1</option>
           <option>2</option>
