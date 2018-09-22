@@ -9,18 +9,12 @@ class VegaItem extends Component {
     this.state = {
       data:'',
       error:'',
-      ejex:'',
-      ejey:'',
-      x:'',
-      y:'',
       user:'',
       comment:'',
-      json:''
+      spec:''
     };
     this.onChangeText=this.onChangeText.bind(this);
     this.aceptar=this.aceptar.bind(this);
-    this.onChangeTextEjeY=this.onChangeTextEjeY.bind(this);
-    this.onChangeTextEjeX=this.onChangeTextEjeX.bind(this);
     this.guardar=this.guardar.bind(this);
     this.onChangeComment=this.onChangeComment.bind(this);
     this.onChangeUser = this.onChangeUser.bind(this);
@@ -35,12 +29,22 @@ class VegaItem extends Component {
   guardar(){
     let { 
       data,
-      x,
-      y,
       user,
-      comment
+      comment,
+      spec
     }= this.state;
-    if(data && x && y && user && comment){
+    let schema = spec.$schema;
+      let description = spec.description;
+      let d = spec.data;
+      let mark = spec.mark;
+      let encoding = spec.encoding;
+      let s={};
+      s.schema=schema;
+      s.description=description;
+      s.data=d;
+      s.mark=mark;
+      s.encoding=encoding;
+    if(data && spec && user && comment){
       fetch('/api/view/create',
       {
         method: 'POST',
@@ -49,11 +53,9 @@ class VegaItem extends Component {
         },
         body: JSON.stringify({
           data: data,
-          ejex: x,
-          ejey: y,
+          spec: s,
           user: user,
           comment: comment
-
           //spec: this.state.spec
         }),
       }).then(res => res.json())
@@ -62,13 +64,10 @@ class VegaItem extends Component {
         alert("La vista ha sido guardada");
       this.setState({
           data: '',
-          ejex: '',
-          ejey: '',
           spec: '',
           json: '',
-          x:'',
-          y:''
-      });
+          text:''
+    });
     }
 });
     }
@@ -77,10 +76,17 @@ class VegaItem extends Component {
     }
 }
   onChangeTextJson(event){
-    this.setState({ 
-      json: event.target.value,
-      error: ''
-    });
+    let json='';
+    try{
+      json = JSON.parse(event.target.value);
+    }
+    catch(error){
+    this.setState({error:error});
+    json='';    
+    }
+
+    this.setState({text:event.target.value,
+      spec:json});
   }
   onChangeComment(event){
     this.setState({ 
@@ -94,18 +100,6 @@ class VegaItem extends Component {
       error: ''
     });
   }
-  onChangeTextEjeX(event){
-    this.setState({
-      ejex: event.target.value,
-      error: ''
-    },()=>{this.aceptar()});
-  }
-  onChangeTextEjeY(event){
-    this.setState({
-      ejey: event.target.value,
-      error: ''
-    },()=>{this.aceptar()});
-  }
   onChangeText(event){
     this.setState({
       data: event.target.value,
@@ -114,19 +108,12 @@ class VegaItem extends Component {
   }
   aceptar(){
     let {
-      ejex,
-      ejey,
       data,
-      json
+      spec
     }=this.state;
-    if(!ejex){
+    if(!spec ){
       this.setState({
-        error: 'Mising value: X axis missing'
-      });
-    }
-    else if(!ejey){
-      this.setState({
-        error: 'Mising value: Y axis missing'
+        error: 'Mising spec a default one will be asigned'
       });
     }
     else if(!data){
@@ -135,43 +122,41 @@ class VegaItem extends Component {
       });
     }
     else {
-      if(!json){
+     
     try {
       let data = JSON.parse(this.state.data);
-      let specPrueba ={
-        "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-        "description": "A simple bar chart with embedded data.",
-        "data": {
-            "name": "myData" 
-          },
-        "mark": "bar"
-      };
-      let x = {};
-      x.field = this.state.ejex;
-      x.type = "ordinal";
-      let y = {};
-      y.field = this.state.ejey;
-      y.type = "quantitative";
-      this.setState({
-        x:x,
-        y:y
-      });
-      let encoding = {};
-      encoding.y=y;
-      encoding.x=x;
-      specPrueba.encoding= encoding;
+      let specPrueba;
+      if(!spec){
+      specPrueba ={
+      "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+      "description": "A simple bar chart with embedded data.",
+      "data": {
+        "name": "myData" 
+      },
+      "mark": "bar",
+      "encoding": {
+        "y": {"field": "a", "type": "ordinal"},
+        "x": {"field": "b", "type": "quantitative"}
+      }
+    };
+    }
+    else {
+      specPrueba=spec;
+    }
       const embed_opt = {"mode": "vega-lite"};    
       const el = this.divrender;
       vegaEmbed(el, specPrueba, embed_opt)
       .catch(error => showError(el, error))
-      .then((res) =>  res.view.insert("myData", data).run());
+      .then((res) =>  res.view.insert(specPrueba.data.name, data).run())
+      .then(
+        this.setState({spec:specPrueba}));
     }catch(error) {
       let x = error.toString();
       this.setState({
         error: x
       });
     }
-  }
+  
     }
   }
 
@@ -179,11 +164,9 @@ class VegaItem extends Component {
 
     let data = this.state.data;
     let error = this.state.error;
-    let ejex = this.state.ejex;
-    let ejey = this.state.ejey;
     let user = this.state.user;
     let comment = this.state.comment;
-    let json = this.state.json;
+    let text = this.state.text;   
     if(error){
       return (
       <div>
@@ -195,32 +178,20 @@ class VegaItem extends Component {
         </div>
         <br/>
         <h3 style={{color: "white"}}>{error}</h3>
-        <Row>
-        <Col> 
+        
+        
         <FormGroup style={{width: "80%", margin: "auto"}}>
-          <Row>
-              <Col>
-                  <Label for="ejex">X axis name</Label>
-                  <Input type="text" name="text" id="ejex" value={ejex} onChange={this.onChangeTextEjeX}/>
-              </Col>
-              <Col>
-                  <Label for="ejey">Y axis name</Label>
-                  <Input type="text" name="text" id="ejey" value={ejey} onChange={this.onChangeTextEjeY}/>
-              </Col>
-          </Row>  
+          
+            <Label for="exampleText">Insert spec as JSON</Label>
+          <Input type="textarea" name="text" id="exampleText" value={text} onChange={this.onChangeTextJson}/>
+          <br/>
           <Label for="exampleText">Insert data as Json</Label>
           <Input type="textarea" name="text" id="exampleText" value={data} onChange={this.onChangeText}/>
         </FormGroup>
          <br/>
 
-         </Col>
-        <Col>
-          <FormGroup style={{width: "80%", margin: "auto"}}>
-            <Label for="exampleText">Insert JSON</Label>
-          <Input type="textarea" name="text" id="exampleText" value={json} onChange={this.onChangeTextJson}/>
-          </FormGroup>
-        </Col>
-        </Row>
+         
+        
         <br/>
          <FormGroup style={{width: "80%", margin: "auto"}}>
          <Label for="userText">Fill your name please</Label>
@@ -250,34 +221,14 @@ class VegaItem extends Component {
           <div ref={(div) => this.divrender=div}></div>
         </div>
         <br/>
-        <Row>
-          <Col>
-
           <FormGroup style={{width: "80%", margin: "auto"}}>
-          <Row>
-            <Col>
-              <Label for="ejex">X axis name</Label>
-              <Input type="text" name="text" id="ejex" value={ejex} onChange={this.onChangeTextEjeX}/>
-            </Col>
-            <Col>
-              <Label for="ejey">Y axis name</Label>
-              <Input type="text" name="text" id="ejey" value={ejey} onChange={this.onChangeTextEjeY}/>
-            </Col>
-          </Row>  
-          <Label for="exampleText">Insert data as text (JSON)</Label>
-          <Input type="textarea" name="text" id="exampleText" value={data} onChange={this.onChangeText}/>
+          
+            <Label for="exampleText">Insert spec JSON</Label>
+          <Input type="textarea" name="text" id="exampleText" value={text} onChange={this.onChangeTextJson}/>
           <br/>
+          <Label for="exampleText">Insert data as Json</Label>
+          <Input type="textarea" name="text" id="exampleText" value={data} onChange={this.onChangeText}/>
         </FormGroup>
-         <br/>
-
-          </Col>
-          <Col>
-            <FormGroup style={{width: "80%", margin: "auto"}}>
-            <Label for="exampleText">Insert JSON</Label>
-          <Input type="textarea" name="text" id="exampleText" value={json} onChange={this.onChangeTextJson}/>
-          </FormGroup>
-          </Col>
-        </Row>
          <br/>
          <FormGroup style={{width: "80%", margin: "auto"}}>
          <Label for="userText">Fill your name please</Label>

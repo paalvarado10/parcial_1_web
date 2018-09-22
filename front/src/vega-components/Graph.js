@@ -28,27 +28,12 @@ class Graph extends Component {
   plot(){
     const plot = this.state.view;
     console.log(plot.data+" ESTE ES EL TO STRING");
-    var y = plot.ejey
-    var x = plot.ejex;
-    var encoding = {};
-    encoding.y=y;
-    encoding.x=x;
-    var spec = {
-      "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-      "description": "A simple bar chart with embedded data.",
-      "data": {
-        "name": "myData" 
-      },
-      "mark": "bar",
-    }
-    spec.encoding = encoding;
-    console.log(spec);
-    console.log(plot.data);
+    let spec = plot.spec;
     const embed_opt = {"mode": "vega-lite"};    
     const el = this.divTarget;
     const view = vegaEmbed(el, spec, embed_opt)
       .catch(error => showError(el, error))
-      .then((res) =>  res.view.insert("myData", JSON.parse(plot.data)).run());
+      .then((res) =>  res.view.insert(spec.data.name, JSON.parse(plot.data)).run());
       this.setState({
         view: view
       });

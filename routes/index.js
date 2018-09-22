@@ -3,8 +3,8 @@ require("dotenv").config();
 var express = require('express');
 var router = new express.Router();
 const MongoClient = require("mongodb").MongoClient;
-const url = process.env.MLAB;
 
+const url = process.env.MLAB;
 var db;
 
 MongoClient.connect(url, (err, client) => {
@@ -15,14 +15,20 @@ MongoClient.connect(url, (err, client) => {
 router.post('/api/view/create', (req, res) => {
   db.collection('views').save(req.body, (err, result) => {
 
-    if (err) res.send({
+    if (err){ 
+      console.log(err);
+      res.send({
       succes: false,
       message: "Error: saving the view in the db"
     }) 
+      }
+      else{
+
     res.send({
       succes: true,
-      result: result
+      result: "exit saving the view"
     });
+    }
   })
 });
 

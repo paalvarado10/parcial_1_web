@@ -10,8 +10,8 @@ class VegaCsv extends Component {
     this.state = {
       data:'',
       error:'',
-      ejex:'',
-      ejey:'',
+      spec:'',
+      text:'',
       exit: false,
       comment: '',
       user:''
@@ -21,21 +21,47 @@ class VegaCsv extends Component {
     this.updateData = this.updateData.bind(this);
     this.onChangeComment=this.onChangeComment.bind(this);
     this.onChangeUser = this.onChangeUser.bind(this);
+    this.onChangeTextJson=this.onChangeTextJson.bind(this);
         this.volver = this.volver.bind(this);
+  }
+  onChangeTextJson(event){
+    let json='';
+    try{
+      json = JSON.parse(event.target.value);
+    }
+    catch(error){
+    this.setState({error:error});
+    json='';    
+    }
+    console.log(event.target.value);
+    console.log(json);
+
+    this.setState({text:event.target.value,
+      spec:json});
   }
     guardar(){
       let {
         data,
         comment,
         user,
-        ejex,
-        ejey
+        spec
       }=this.state;
       if(!data && !user && !comment){
         alert("Mising Values, data, user and comment are require for saving");
       }
       else{
       //-------------------------------------
+      let schema = spec.$schema;
+      let description = spec.description;
+      let d = spec.data;
+      let mark = spec.mark;
+      let encoding = spec.encoding;
+      let s={};
+      s.schema=schema;
+      s.description=description;
+      s.data=d;
+      s.mark=mark;
+      s.encoding=encoding;
       fetch('/api/view/create',
       {
         method: 'POST',
@@ -44,19 +70,18 @@ class VegaCsv extends Component {
         },
         body: JSON.stringify({
           data: data,
-          ejex: ejex,
-          ejey: ejey,
+          spec: s,
           user: user,
           comment: comment
         }),
       }).then(res => res.json())
   .then(json => {
+    console.log(json.message);
       if(json.succes) {
         alert("La vista ha sido guardada");
       this.setState({
           data: '',
-          ejex: '',
-          ejey: '',
+          spec:'',
           user:'',
           comment:''
       });
@@ -75,11 +100,10 @@ class VegaCsv extends Component {
   }
 
   updateData(result) {
-    const data = result.data;
-    console.log(data);
- 
-    try {
-      let specPrueba ={
+    let spec=this.state.spec;
+    let specPrueba;
+    if(!spec){
+     specPrueba ={
         "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
         "description": "A simple bar chart with embedded data.",
         "data": {
@@ -91,13 +115,45 @@ class VegaCsv extends Component {
             "y": {"field": "b", "type": "quantitative"}
           }
         }
+    console.log(JSON.stringify(specPrueba)+"    Spec original");
+    }
+
+    else{
+      specPrueba=this.state.spec;
+      let data = specPrueba.data;
+      let mark = specPrueba.mark;
+      let encoding = specPrueba.encoding;
+      let temp={};
+      console.log(JSON.stringify(specPrueba)+" ASI LLEGA");
+      if(!specPrueba.$schema){
+        temp.$schema="https://vega.github.io/schema/vega-lite/v2.json";
+
+      }else{
+        temp=specPrueba.$schema;
+      }
+
+      if(!specPrueba.description){
+        temp.description="A simple bar chart with embedded data.";
+      }
+      else{
+        temp.description=specPrueba.description;
+      }
+      temp.data = data;
+      temp.mark=mark;
+      temp.encoding=encoding;
+      specPrueba=temp;
+      console.log(data);
+      console.log('Spec de salida'+JSON.stringify(specPrueba));
+    }
+    const data = result.data;
+    try { 
       const embed_opt = {"mode": "vega-lite"};    
       const el = this.divrender;
       vegaEmbed(el, specPrueba, embed_opt)
       .catch(error => showError(el, error))
-      .then((res) =>  res.view.insert("myData", data).run())
+      .then((res) =>  res.view.insert(specPrueba.data.name, data).run())
       .then(   
-        this.setState({exit:true, data: JSON.stringify(data), spec:specPrueba, ejex:specPrueba.encoding.x, ejey:specPrueba.encoding.y}));
+        this.setState({exit:true, data: JSON.stringify(data), spec:specPrueba}));
     }catch(error) {
       let x = error.toString();
       this.setState({
@@ -125,7 +181,8 @@ class VegaCsv extends Component {
       data,
       error,
       comment,
-      user
+      user,
+      text
     }= this.state;
     if(error){
       return (
@@ -137,6 +194,10 @@ class VegaCsv extends Component {
         </div>
         <br/>
         <h3 style={{color: "white"}}>{error}</h3>
+        <FormGroup style={{width: "80%", margin: "auto"}}>
+            <Label for="exampleText">Insert JSON</Label>
+          <Input type="textarea" name="text" id="exampleText" value={text} onChange={this.onChangeTextJson}/>
+          </FormGroup>
         <FormGroup style={{width: "50%", margin: "auto"}}>
         <Label for="exampleFile">A partir de un csv</Label>
           <Input type="file" name="file" id="exampleFile" value={data} onChange={this.handleChange}/>
@@ -162,8 +223,11 @@ class VegaCsv extends Component {
           <div ref={(div) => this.divrender=div}></div>
         </div>
         <br/>
+        <FormGroup style={{width: "80%", margin: "auto"}}>
+            <Label for="exampleText">Insert JSON</Label>
+          <Input type="textarea" name="text" id="exampleText" value={text} onChange={this.onChangeTextJson}/>
+          </FormGroup>
         <FormGroup style={{width: "50", margin: "auto"}}>
-        
         <Row>
         <Col></Col>
         <Col className="contenedor-vega">
@@ -189,7 +253,7 @@ class VegaCsv extends Component {
          <Button color="danger" onClick={this.volver}>Back</Button>  
          </Col>
          </Row>
-         
+
 
       </div>
     );  
