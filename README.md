@@ -50,8 +50,7 @@ cd front
 npm start 
 ```
 
-
-
+La aplicación corre en el puerto 3000 (front) y en el 8080 (Back), asi que es importante revisar que los puertos esten habilitados
 
 
 
