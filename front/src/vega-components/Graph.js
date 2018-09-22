@@ -15,6 +15,7 @@ class Graph extends Component {
     this.state = {
       view: this.props.view,
       text: '',
+      id:'',
       list:''
     };
     this.volver = this.volver.bind(this);
@@ -28,6 +29,7 @@ class Graph extends Component {
   	});
   	this.plot();
    const id=this.state.view._id;
+   this.setState({ id: id});
     fetch('/api/reting/rate?id='+id)
     .then(res => res.json())
     .then(json=>{
@@ -74,6 +76,7 @@ class Graph extends Component {
   }
   render() {
     let list = this.state.list;
+    let id = this.state.id;
     if(list){
       let prom=0;
       console.log(list.length);
@@ -101,7 +104,7 @@ class Graph extends Component {
               <div ref={(div) => this.divTarget=div}></div>
             </div>
             <br/>
-            <Ratting id={this.state.view._id} />
+            <Ratting id={id} />
          </Col>
          <Col>
             <div key="listaCalificaciones" className="contenedor-vega">

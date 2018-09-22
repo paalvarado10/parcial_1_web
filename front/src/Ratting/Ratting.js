@@ -15,13 +15,15 @@ class Ratting extends Component {
     this.save=this.save.bind(this);
   }
   componentDidMount(){
-    fetch('/api/reting/rate?id='+this.state.id)
+    const id = this.state.id;
+    fetch('/api/reting/rate?id='+id)
     .then(res => res.json())
     .then(json=>{
       if(json.succes){
         let rs = json.result
         this.setState({
-          list: rs
+          list: rs,
+          id: id
         });
       }
     });
@@ -35,7 +37,7 @@ class Ratting extends Component {
       user,
       id
     } =this.state;
-    if(rate && user){
+    if(rate && user && id){
       //-------------------------------------------------------------
       fetch('/api/rating/create',
       {
