@@ -4,8 +4,7 @@ var express = require('express');
 var router = new express.Router();
 const MongoClient = require("mongodb").MongoClient;
 
-//const url = process.env.MLAB;
-const url="mongodb://parcial_1:bdparcial1@ds163402.mlab.com:63402/parcial_1";   
+const url = process.env.MLAB;  
 var db;
 
 MongoClient.connect(url, (err, client) => {
