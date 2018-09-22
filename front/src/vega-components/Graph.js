@@ -77,6 +77,7 @@ class Graph extends Component {
   render() {
     let list = this.state.list;
     let id = this.state.id;
+    console.log("el id del view "+id)
     if(list){
       let prom=0;
       console.log(list.length);
